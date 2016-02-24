@@ -445,7 +445,8 @@ static int sculld_defer_op(int write, struct kiocb *iocb, char __user *buf,
 		return result; /* No memory, just complete now */
 	stuff->iocb = iocb;
 	stuff->result = result;
-	INIT_WORK(&stuff->work, sculld_do_deferred_op, stuff);
+    /*INIT_WORK(&stuff->work, sculld_do_deferred_op, stuff);*/
+    INIT_WORK(&stuff->work, sculld_do_deferred_op);
 	schedule_delayed_work(&stuff->work, HZ/100);
 	return -EIOCBQUEUED;
 }
@@ -534,7 +535,8 @@ static void sculld_setup_cdev(struct sculld_dev *dev, int index)
 
 static ssize_t sculld_show_dev(struct device *ddev, char *buf)
 {
-	struct sculld_dev *dev = ddev->driver_data;
+	/*struct sculld_dev *dev = ddev->driver_data;*/
+	struct sculld_dev *dev = dev_get_drvdata(ddev);
 
 	return print_dev_t(buf, dev->cdev.dev);
 }
@@ -546,7 +548,8 @@ static void sculld_register_dev(struct sculld_dev *dev, int index)
 	sprintf(dev->devname, "sculld%d", index);
 	dev->ldev.name = dev->devname;
 	dev->ldev.driver = &sculld_driver;
-	dev->ldev.dev.driver_data = dev;
+    dev_set_drvdata(&dev->ldev.dev,dev);
+	/*dev->ldev.dev.driver_data = dev;*/
 	register_ldd_device(&dev->ldev);
 	device_create_file(&dev->ldev.dev, &dev_attr_dev);
 }

@@ -21,6 +21,7 @@
 #include <linux/mm.h>		/* everything */
 #include <linux/errno.h>	/* error codes */
 #include <asm/pgtable.h>
+#include <linux/semaphore.h>
 
 #include "scullv.h"		/* local definitions */
 
@@ -62,7 +63,7 @@ struct page *scullv_vma_nopage(struct vm_area_struct *vma,
 {
 	unsigned long offset;
 	struct scullv_dev *ptr, *dev = vma->vm_private_data;
-	struct page *page = NOPAGE_SIGBUS;
+	struct page *page = NULL;
 	void *pageptr = NULL; /* default to "missing" */
 
 	down(&dev->sem);
@@ -103,7 +104,7 @@ struct page *scullv_vma_nopage(struct vm_area_struct *vma,
 struct vm_operations_struct scullv_vm_ops = {
 	.open =     scullv_vma_open,
 	.close =    scullv_vma_close,
-	.nopage =   scullv_vma_nopage,
+	/*.nopage =   scullv_vma_nopage,*/
 };
 
 
@@ -113,7 +114,8 @@ int scullv_mmap(struct file *filp, struct vm_area_struct *vma)
 	/* don't do anything here: "nopage" will set up page table entries */
 	vma->vm_ops = &scullv_vm_ops;
 	vma->vm_flags |= VM_RESERVED;
-	vma->vm_private_data = filp->private_data;
+    vma->vm_private_data = filp->private_data;
+
 	scullv_vma_open(vma);
 	return 0;
 }
