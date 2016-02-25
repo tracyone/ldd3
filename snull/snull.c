@@ -87,6 +87,8 @@ struct snull_priv {
 	u8 *tx_packetdata;
 	struct sk_buff *skb;
 	spinlock_t lock;
+    struct napi_struct;
+    struct net_device;
 };
 
 static void snull_tx_timeout(struct net_device *dev);

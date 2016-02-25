@@ -22,6 +22,7 @@
 #include <linux/errno.h>	/* error codes */
 #include <asm/pgtable.h>
 #include <linux/semaphore.h>
+#include <linux/fs.h>
 
 #include "scullv.h"		/* local definitions */
 
